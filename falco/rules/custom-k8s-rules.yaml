@@ -1,0 +1,24 @@
+- rule: Terminal Shell Spawned in Production Container
+  desc: Detect any interactive shell (bash/sh/zsh) spawned inside an active container
+  condition: >
+    container.id != host and
+    spawned_process and
+    proc.name in (bash, sh, zsh, ksh, ash) and
+    k8s.ns.name = "production"
+  output: >
+    [CRITICAL] Interactive shell spawned in container (user=%user.name pod=%k8s.pod.name ns=%k8s.ns.name cmd=%proc.cmdline)
+  priority: CRITICAL
+  tags: [container, mitre_execution, pss_restricted]
+
+- rule: Sensitive File Read in Container
+  desc: Detect unauthorized access to sensitive Linux credential and system files
+  condition: >
+    open_read and
+    container and
+    fd.name in (/etc/shadow, /etc/sudoers, /var/run/secrets/kubernetes.io/serviceaccount/token) and
+    not proc.name in (vault-agent, istio-proxy)
+  output: >
+    [WARNING] Sensitive credential accessed (file=%fd.name user=%user.name pod=%k8s.pod.name)
+  priority: WARNING
+  tags: [filesystem, credential_access]
+
