@@ -1,0 +1,22 @@
+- rule: Detect Crypto-Mining Network Connection
+  desc: Detect outbound network connections to common cryptocurrency mining pools and ports
+  condition: >
+    evt.type = connect and
+    container and
+    (fd.sip in (xmr.pool.minergate.com, pool.supportxmr.com, stratum.antpool.com) or
+     fd.sport in (3333, 4444, 5555, 7777, 8888, 9999, 14444))
+  output: >
+    [CRITICAL] Outbound Crypto-Mining connection detected (pod=%k8s.pod.name ns=%k8s.ns.name ip=%fd.rip port=%fd.rport proc=%proc.name)
+  priority: CRITICAL
+  tags: [mitre_impact, cryptomining, container_security]
+
+- rule: Detect Crypto-Miner Process Execution
+  desc: Detect execution of known cryptocurrency miner binaries
+  condition: >
+    spawned_process and
+    container and
+    proc.name in (xmrig, minerd, cpuminer, ethminer, ccminer, stratum)
+  output: >
+    [CRITICAL] Crypto-mining binary spawned in pod (pod=%k8s.pod.name ns=%k8s.ns.name proc=%proc.name cmdline=%proc.cmdline)
+  priority: CRITICAL
+  tags: [mitre_execution, cryptomining]
