@@ -1,5 +1,5 @@
 {
-  "audit_timestamp": "2026-11-08T18:20:53Z",
+  "audit_timestamp": "2026-11-09T12:02:40Z",
   "benchmark": "CIS Kubernetes Benchmark v1.8.0",
   "compliance_score": "98.5%",
   "pss_level": "Restricted",
