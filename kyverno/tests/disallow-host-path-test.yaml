@@ -1,0 +1,19 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: disallow-host-path-test
+policies:
+  - ../policies/disallow-host-path.yaml
+resources:
+  - resource-host-path.yaml
+results:
+  - policy: disallow-host-path
+    rule: validate-host-path
+    resource: bad-host-path
+    kind: Pod
+    result: fail
+  - policy: disallow-host-path
+    rule: validate-host-path
+    resource: good-empty-dir
+    kind: Pod
+    result: pass
