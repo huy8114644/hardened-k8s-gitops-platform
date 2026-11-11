@@ -1,35 +1,33 @@
-name: Kubernetes Policy & Compliance Audit
-
+name: Kubernetes policy validation
 on:
   push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
   schedule:
-    # Business hours audit: 10:42 and 16:42 Asia/Ho_Chi_Minh (03:42 & 09:42 UTC)
-    - cron: '42 3,9 * * 1-5'
+    - cron: '42 3 * * 1'
   workflow_dispatch:
-
 permissions:
   contents: read
-
 jobs:
   validate-policies:
-    name: Kyverno Policy Validation & CIS Conformance
+    name: YAML checks and Kyverno fixtures
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Install Kyverno CLI
-        uses: kyverno/action-install-cli@v0.2.0
-
-      - name: Test Kyverno Policies against Manifests
-        run: |
-          echo "==> Validating Kyverno cluster policies..."
-          kyverno test kyverno/ || true
-
-      - name: Conformance Check Complete
-        run: |
-          echo "Kyverno Policy Validation: PASSED (PSS Restricted & Zero Trust)"
-
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: kyverno/action-install-cli@v0.2.0
+        with:
+          release: v1.14.4
+      - run: make setup
+      - run: make test
+  misconfiguration-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: config
+          scan-ref: network-policies
+          severity: HIGH,CRITICAL
+          exit-code: '1'

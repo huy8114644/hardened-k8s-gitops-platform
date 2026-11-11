@@ -1,0 +1,24 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: explicit-nonroot-values-and-optional-field-gap
+policies:
+- ../../policies/require-run-as-non-root.yaml
+resources:
+- resources.yaml
+results:
+- policy: require-run-as-non-root
+  rule: check-runAsNonRoot
+  resource: good-nonroot
+  kind: Pod
+  result: pass
+- policy: require-run-as-non-root
+  rule: check-runAsNonRoot
+  resource: bad-root
+  kind: Pod
+  result: fail
+- policy: require-run-as-non-root
+  rule: check-runAsNonRoot
+  resource: missing-security-context
+  kind: Pod
+  result: pass
