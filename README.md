@@ -48,6 +48,8 @@ make scan
 
 `make lint` parses checked-in YAML and checks manifest identity/network defaults. `make test` evaluates fixtures with the real Kyverno engine. These checks do not test CNI packet forwarding or Falco kernel events. `make scan` is a separate security gate and can identify outstanding findings; no passing score is implied.
 
+CI also runs a separate Trivy HIGH/CRITICAL gate against `network-policies/` only. Local `make scan` additionally scans `kyverno/`; the CI scan does not cover the entire policy repository.
+
 ## Configuration
 
 There are no application environment variables. The following Make variables and manifest values control local commands:
